@@ -11,8 +11,7 @@ const { protect, restrictTo } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-// Define routes
-router.post('/', protect, restrictTo(['SalesUser', 'Admin', 'SalesManager']), createCustomer); 
+router.post('/', protect, restrictTo(['SalesUser']), createCustomer); 
 router.get('/', protect, restrictTo(['SalesUser', 'Admin', 'SalesManager']), getAllCustomers);
 router.get('/:id', protect, restrictTo(['SalesUser', 'Admin', 'SalesManager']), getCustomerById);
 router.put('/:id', protect, restrictTo(['SalesUser', 'Admin', 'SalesManager']), updateCustomer); 

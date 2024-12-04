@@ -4,9 +4,9 @@ const userRoutes = require('./routes/userRoutes');
 const customerRoutes = require('./routes/customerRoutes');
 const connectDB = require('./config/db');
 
-dotenv.config(); // Load environment variables
+dotenv.config(); 
 
-connectDB(); // Connect to MongoDB
+connectDB(); 
 
 const app = express();
 

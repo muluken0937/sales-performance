@@ -1,10 +1,20 @@
-// controllers/customerController.js
-
 const Customer = require('../models/Customer');  
+
 exports.createCustomer = async (req, res) => {
   try {
     const { location, phoneNumber, description, paidStatus, visitStatus, email } = req.body;
-    const newCustomer = await Customer.create({ location, phoneNumber, description, paidStatus, visitStatus, email });
+
+    // Create a new customer
+    const newCustomer = await Customer.create({ 
+      location, 
+      phoneNumber, 
+      description, 
+      paidStatus, 
+      visitStatus, 
+      email 
+    });
+
+    // Respond with the new customer data
     res.status(201).json({
       success: true,
       data: newCustomer,
