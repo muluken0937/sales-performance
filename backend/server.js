@@ -1,14 +1,17 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const cors = require('cors'); // Import CORS
 const userRoutes = require('./routes/userRoutes');
 const customerRoutes = require('./routes/customerRoutes');
 const connectDB = require('./config/db');
 
-dotenv.config(); 
+dotenv.config();
 
-connectDB(); 
+connectDB();
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 

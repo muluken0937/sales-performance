@@ -1,20 +1,22 @@
 const Customer = require('../models/Customer');  
 
+// Create a new customer
 exports.createCustomer = async (req, res) => {
   try {
-    const { location, phoneNumber, description, paidStatus, visitStatus, email } = req.body;
+    const { name, location, phoneNumber, description, paidStatus, visitStatus, email } = req.body;
+    const createdBy = req.user.id; 
 
-    // Create a new customer
     const newCustomer = await Customer.create({ 
+      name, 
       location, 
       phoneNumber, 
       description, 
       paidStatus, 
       visitStatus, 
-      email 
+      email,
+      createdBy 
     });
 
-    // Respond with the new customer data
     res.status(201).json({
       success: true,
       data: newCustomer,

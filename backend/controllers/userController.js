@@ -94,35 +94,37 @@ exports.createUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // Role restrictions based on the logged-in user's role
+    // Check for existing user
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: 'Email already in use.' });
+    }
+
+    // Check role restrictions
     if (req.user.role === 'SalesManager' && role !== 'SalesUser') {
-      return res.status(403).json({
-        success: false,
-        message: 'Sales Managers can only create Sales Users.',
-      });
+      return res.status(403).json({ success: false, message: 'Sales Managers can only create Sales Users.' });
     }
 
     if (req.user.role === 'SalesUser') {
-      return res.status(403).json({
-        success: false,
-        message: 'Sales Users are not authorized to create new users.',
-      });
+      return res.status(403).json({ success: false, message: 'Sales Users are not authorized to create new users.' });
     }
 
+    // Hash password
     const hashedPassword = await hashPassword(password);
 
-    const newUser = await User.create({ name, email, password: hashedPassword, role });
+    const newUser = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role,
+      createdBy: req.user._id,
+      imagePath: req.file ? req.file.path : null, // Save image path
+    });
 
-    res.status(201).json({
-      success: true,
-      data: newUser,
-      message: `${role} created successfully.`,
-    });
+    res.status(201).json({ success: true, data: newUser, message: `${role} created successfully.` });
   } catch (err) {
-    res.status(400).json({
-      success: false,
-      error: err.message,
-    });
+    console.error('Error creating user:', err);
+    res.status(400).json({ success: false, error: err.message });
   }
 };
 
