@@ -79,6 +79,7 @@ exports.loginUser = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+         profileImage: user.profileImage,
       },
     });
   } catch (err) {
@@ -100,7 +101,6 @@ exports.createUser = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Email already in use.' });
     }
 
-    // Check role restrictions
     if (req.user.role === 'SalesManager' && role !== 'SalesUser') {
       return res.status(403).json({ success: false, message: 'Sales Managers can only create Sales Users.' });
     }
@@ -108,6 +108,9 @@ exports.createUser = async (req, res) => {
     if (req.user.role === 'SalesUser') {
       return res.status(403).json({ success: false, message: 'Sales Users are not authorized to create new users.' });
     }
+
+    const imagePath = req.file ? `/uploads/${req.file.filename}` : null; // Relative URL
+
 
     // Hash password
     const hashedPassword = await hashPassword(password);
@@ -118,7 +121,7 @@ exports.createUser = async (req, res) => {
       password: hashedPassword,
       role,
       createdBy: req.user._id,
-      imagePath: req.file ? req.file.path : null, // Save image path
+      profileImage: imagePath, // Save the file path
     });
 
     res.status(201).json({ success: true, data: newUser, message: `${role} created successfully.` });
@@ -167,22 +170,43 @@ exports.getUserById = async (req, res) => {
 };
 
 // Update a user
+const path = require('path');
+const fs = require('fs');
+
 exports.updateUser = async (req, res) => {
   try {
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-    if (!updatedUser) {
+    const { name, email } = req.body;
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: 'User not found',
       });
     }
+
+    if (req.file) {
+      // Delete the old profile image if it exists
+      if (user.profileImage) {
+        const oldImagePath = path.join(__dirname, '..', user.profileImage);
+        fs.unlink(oldImagePath, (err) => {
+          if (err) console.error('Failed to delete old image:', err);
+        });
+      }
+      user.profileImage = `/uploads/${req.file.filename}`;
+    }
+
+    // Update name and email if provided
+    if (name) user.name = name;
+    if (email) user.email = email;
+
+    // Save updated user
+    const updatedUser = await user.save();
+
     res.status(200).json({
       success: true,
       data: updatedUser,
-      message: 'User update successfully',
+      message: 'User updated successfully',
     });
   } catch (err) {
     res.status(400).json({

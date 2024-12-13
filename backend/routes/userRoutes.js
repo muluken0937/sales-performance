@@ -19,7 +19,7 @@ router.post('/login', loginUser);
 router.post('/', protect, restrictTo(['Admin', 'SalesManager']), upload.single('image'), createUser); // Add file upload
 router.get('/', protect, restrictTo(['Admin', 'SalesManager']), getAllUsers);
 router.get('/:id', protect, restrictTo(['Admin', 'SalesManager']), getUserById);
-router.put('/:id', protect, restrictTo(['Admin', 'SalesManager']), updateUser);
+router.put('/:id', protect, restrictTo(['admin', 'SalesManager', 'SalesUser']), upload.single('image'), updateUser);
 router.delete('/:id', protect, restrictTo(['Admin']), deleteUser);
 
 module.exports = router;

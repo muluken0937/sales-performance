@@ -22,12 +22,17 @@ export default function Login({ onLogin }) {
     e.preventDefault();
     try {
       const response = await axiosInstance.post('/users/login', { email, password });
+      
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('role', response.data.data.role); 
       localStorage.setItem('userId', response.data.data.id); 
+      localStorage.setItem("userName", response.data.data.name);
+      localStorage.setItem("userImage", response.data.data.profileImage || null);
+
       setError('');
       onLogin(); 
       window.location.href = '/dashboard'; 
+      
     } catch (err) {
       setError(err.response?.data?.message || 'Something went wrong');
     }
