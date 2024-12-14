@@ -1,17 +1,22 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+
 import Navbar from './components/NavBar';
 import Sidebar from './components/Sidebar';
+import ProtectedRoute from './components/ProtectedRoute';
+
 import Login from './pages/Login';
 import RegisterUser from './pages/RegisterUser';
 import Dashboard from './pages/Dashboard';
-import ProtectedRoute from './components/ProtectedRoute';
 import CustomersForm from './pages/customersForm';
 import UpdateProfile from './pages/UpdateProfile';
-import Profile from './pages/Profile'; // Import Profile component
+import Profile from './pages/Profile'; 
+import CustomerList from './pages/CustomerList'; 
+import Notification from './pages/Notification';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -24,66 +29,83 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('userId'); // Clear stored user ID on logout
+    localStorage.removeItem('userId');
     setIsLoggedIn(false);
   };
 
-  const AuthenticatedLayout = ({ children }) => (
-    <>
-      <Navbar onLogout={handleLogout} />
-      <div className="flex">
-        <Sidebar />
-        <main className="flex-1 ml-52">{children}</main>
-      </div>
-    </>
-  );
-
-  const loggedInUserId = localStorage.getItem('userId'); 
+  const loggedInUserId = localStorage.getItem('userId');
 
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
-
-      <Route path="/login" element={<Login onLogin={handleLogin} />} />
-
-      <Route path="/register" element={<RegisterUser />} />
-
-      <Route path="/register-customer" element={<CustomersForm />} />
-
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <AuthenticatedLayout>
-              <Dashboard />
-            </AuthenticatedLayout>
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/update-profile"
-        element={
-          <ProtectedRoute>
-            <AuthenticatedLayout>
-              <UpdateProfile userId={loggedInUserId} />
-            </AuthenticatedLayout>
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Profile Page Route */}
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <AuthenticatedLayout>
-              <Profile userId={loggedInUserId} />
-            </AuthenticatedLayout>
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+    <>
+      {/* Render Navbar and Sidebar only if not on the login page */}
+      {location.pathname !== '/login' && (
+        <>
+          <Navbar onLogout={handleLogout} />
+          <div className="flex">
+            <Sidebar />
+            <main className="flex-1 ml-52">
+              <Routes>
+                <Route path="/" element={<Navigate to="/login" replace />} />
+                <Route path="/login" element={<Login onLogin={handleLogin} />} />
+                <Route path="/register" element={<RegisterUser />} />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/register-customer"
+                  element={
+                    <ProtectedRoute>
+                      <CustomersForm />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/update-profile"
+                  element={
+                    <ProtectedRoute>
+                      <UpdateProfile userId={loggedInUserId} />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <Profile userId={loggedInUserId} />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/customer-list"
+                  element={
+                    <ProtectedRoute>
+                      <CustomerList />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/notifications"
+                  element={
+                    <ProtectedRoute>
+                      <Notification />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="*" element={<Navigate to="/login" replace />} />
+              </Routes>
+            </main>
+          </div>
+        </>
+      )}
+      
+      {/* Always render login page */}
+      {location.pathname === '/login' && <Login onLogin={handleLogin} />}
+    </>
   );
 }
 

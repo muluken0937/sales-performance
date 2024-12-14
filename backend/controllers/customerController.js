@@ -32,7 +32,13 @@ exports.createCustomer = async (req, res) => {
 // Controller to get all customers
 exports.getAllCustomers = async (req, res) => {
   try {
-    const customers = await Customer.find();
+    // If the user is a SalesUser, filter by createdBy
+    const query = req.user.role === 'SalesUser' ? { createdBy: req.user.id } : {};
+    
+    const customers = await Customer.find(query)
+      .populate('createdBy', 'name email') 
+      .exec();
+
     res.status(200).json({
       success: true,
       data: customers,
@@ -111,5 +117,47 @@ exports.deleteCustomer = async (req, res) => {
       success: false,
       error: err.message,
     });
+  }
+};
+exports.pending = async (req, res) => {
+  try {
+      const { paidStatus, visitStatus } = req.body;
+      const updatedCustomer = await Customer.findByIdAndUpdate(req.params.id, {
+          paidStatus,
+          visitStatus,
+          isPendingApproval: true, // Mark as pending
+      }, { new: true });
+      
+      if (!updatedCustomer) {
+          return res.status(404).json({ success: false, message: 'Customer not found' });
+      }
+
+      res.status(200).json({
+          success: true,
+          data: updatedCustomer,
+          message: 'Status updated and awaiting approval',
+      });
+  } catch (err) {
+      res.status(400).json({ success: false, error: err.message });
+  }
+};
+
+exports.aprovePending = async (req, res) => {
+  try {
+      const updatedCustomer = await Customer.findByIdAndUpdate(req.params.id, {
+          isPendingApproval: false, // Approve changes
+      }, { new: true });
+
+      if (!updatedCustomer) {
+          return res.status(404).json({ success: false, message: 'Customer not found' });
+      }
+
+      res.status(200).json({
+          success: true,
+          data: updatedCustomer,
+          message: 'Status approved',
+      });
+  } catch (err) {
+      res.status(400).json({ success: false, error: err.message });
   }
 };

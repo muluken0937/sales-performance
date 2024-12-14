@@ -9,6 +9,8 @@ const customerSchema = new mongoose.Schema({
     visitStatus: { type: Boolean, default: false },
     description: { type: String },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    isPendingApproval: { type: Boolean, default: false }, 
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('Customer', customerSchema);

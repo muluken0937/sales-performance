@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function UpdateProfile({ userId }) {
@@ -7,6 +8,7 @@ function UpdateProfile({ userId }) {
   const [previewImage, setPreviewImage] = useState(null);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch user data to populate the form
@@ -59,6 +61,11 @@ function UpdateProfile({ userId }) {
       );
 
       setMessage(response.data.message || 'Profile updated successfully!');
+
+      // Show confirmation dialog
+      if (window.confirm('Profile updated successfully! Click OK to go to the dashboard.')) {
+        navigate('/dashboard'); // Redirect to the dashboard
+      }
     } catch (error) {
       setMessage(error.response?.data?.message || 'Error updating profile.');
     } finally {

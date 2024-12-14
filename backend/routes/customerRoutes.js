@@ -4,7 +4,9 @@ const {
   getAllCustomers,
   getCustomerById,
   updateCustomer,
-  deleteCustomer
+  deleteCustomer,
+  pending,
+  aprovePending
 } = require('../controllers/customerController');  
 
 const { protect, restrictTo } = require('../middleware/authMiddleware');
@@ -16,5 +18,6 @@ router.get('/', protect, restrictTo(['SalesUser', 'Admin', 'SalesManager']), get
 router.get('/:id', protect, restrictTo(['SalesUser', 'Admin', 'SalesManager']), getCustomerById);
 router.put('/:id', protect, restrictTo(['SalesUser', 'Admin', 'SalesManager']), updateCustomer); 
 router.delete('/:id', protect, restrictTo(['SalesUser', 'Admin', 'SalesManager']), deleteCustomer); 
-
+router.patch('/:id/status', protect, restrictTo(['SalesUser']), pending);
+router.patch('/:id/approve', protect, restrictTo(['SalesManager']), aprovePending);
 module.exports = router;
