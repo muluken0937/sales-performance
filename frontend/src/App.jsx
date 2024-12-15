@@ -13,6 +13,7 @@ import UpdateProfile from './pages/UpdateProfile';
 import Profile from './pages/Profile'; 
 import CustomerList from './pages/CustomerList'; 
 import Notification from './pages/Notification';
+import SalesPerformance from './pages/SalesPerformance'; // Import SalesPerformance
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -89,6 +90,14 @@ function App() {
                   }
                 />
                 <Route
+                  path="/sales-performance" // Add route for SalesPerformance
+                  element={
+                    <ProtectedRoute>
+                      <SalesPerformance />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/notifications"
                   element={
                     <ProtectedRoute>
@@ -103,7 +112,6 @@ function App() {
         </>
       )}
       
-      {/* Always render login page */}
       {location.pathname === '/login' && <Login onLogin={handleLogin} />}
     </>
   );

@@ -1,4 +1,6 @@
 import React from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTachometerAlt, faChartBar, faUsers, faBriefcase, faChartLine } from '@fortawesome/free-solid-svg-icons';
 
 export default function Sidebar() {
   return (
@@ -7,31 +9,31 @@ export default function Sidebar() {
       <nav className="space-y-4">
         {/* Dashboard */}
         <a href="/dashboard" className="flex items-center p-2 bg-blue-800 rounded hover:bg-blue-700">
-          <i className="fas fa-tachometer-alt"></i>
+          <FontAwesomeIcon icon={faTachometerAlt} />
           <span className="ml-4">Dashboard</span>
+        </a>
+
+        {/* Sales Performance */}
+        <a href="/sales-performance" className="flex items-center p-2 hover:bg-gray-800 rounded">
+          <FontAwesomeIcon icon={faChartBar} />
+          <span className="ml-4">Sales Performance</span>
         </a>
 
         {/* Customer List */}
         <a href="/customer-list" className="flex items-center p-2 hover:bg-gray-800 rounded">
-          <i className="fas fa-users"></i>
+          <FontAwesomeIcon icon={faUsers} />
           <span className="ml-4">Customer List</span>
-        </a>
-
-        {/* Contacts */}
-        <a href="/contacts" className="flex items-center p-2 hover:bg-gray-800 rounded">
-          <i className="fas fa-address-book"></i>
-          <span className="ml-4">Contacts</span>
         </a>
 
         {/* Accounts */}
         <a href="/accounts" className="flex items-center p-2 hover:bg-gray-800 rounded">
-          <i className="fas fa-briefcase"></i>
+          <FontAwesomeIcon icon={faBriefcase} />
           <span className="ml-4">Accounts</span>
         </a>
 
         {/* Opportunities */}
         <a href="/opportunities" className="flex items-center p-2 hover:bg-gray-800 rounded">
-          <i className="fas fa-chart-line"></i>
+          <FontAwesomeIcon icon={faChartLine} />
           <span className="ml-4">Opportunities</span>
         </a>
       </nav>
