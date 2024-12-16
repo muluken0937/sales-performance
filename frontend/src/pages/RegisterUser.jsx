@@ -64,7 +64,6 @@ export default function RegisterUser() {
       setMessage(`${registerRole} registered successfully.`);
       resetForm();
 
-      // Redirect to dashboard after successful registration
       navigate('/dashboard');
     } catch (err) {
       const errorMsg = err.response?.data?.message || 'Registration failed';
@@ -87,9 +86,9 @@ export default function RegisterUser() {
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-semibold mb-4">Register {registerRole}</h1>
+      <h1 className="text-2xl font-semibold mb-4 text-center">Register {registerRole}</h1>
       {userRole === 'SalesUser' ? (
-        <p className="text-red-600">You are not authorized to register new users.</p>
+        <p className="text-red-600 text-center">You are not authorized to register new users.</p>
       ) : (
         <form onSubmit={handleRegister} className="space-y-4">
           <input
@@ -98,7 +97,7 @@ export default function RegisterUser() {
             onChange={(e) => setName(e.target.value)}
             placeholder="Name"
             required
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-500"
           />
           <input
             type="email"
@@ -106,7 +105,7 @@ export default function RegisterUser() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
             required
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-500"
           />
           <input
             type="password"
@@ -114,7 +113,7 @@ export default function RegisterUser() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             required
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-500"
           />
 
           <div className="p-2 border border-gray-300 rounded">
@@ -122,7 +121,7 @@ export default function RegisterUser() {
             <select
               value={registerRole}
               onChange={(e) => setRegisterRole(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded"
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-500"
               required
             >
               {getAvailableRoles(userRole).map((role) => (

@@ -74,8 +74,8 @@ function UpdateProfile({ userId }) {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-xl font-bold mb-4">Update Profile</h1>
+    <div className="container mx-auto p-6 max-w-md bg-white shadow-md rounded-lg">
+      <h1 className="text-2xl font-bold mb-4 text-center">Update Profile</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block mb-2">Name</label>
@@ -84,7 +84,8 @@ function UpdateProfile({ userId }) {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
+            required
           />
         </div>
 
@@ -95,30 +96,33 @@ function UpdateProfile({ userId }) {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
+            required
           />
         </div>
 
         <div className="mb-4">
           <label className="block mb-2">Profile Image</label>
-          {previewImage && <img src={previewImage} alt="Preview" className="mb-2 w-32 h-32 rounded-full" />}
+          {previewImage && (
+            <img src={previewImage} alt="Preview" className="mb-2 w-32 h-32 rounded-full mx-auto" />
+          )}
           <input
             type="file"
             onChange={handleFileChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border rounded focus:outline-none"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
         >
           {loading ? 'Updating...' : 'Update Profile'}
         </button>
       </form>
 
-      {message && <p className="mt-4 text-green-600">{message}</p>}
+      {message && <p className="mt-4 text-green-600 text-center">{message}</p>}
     </div>
   );
 }

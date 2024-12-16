@@ -13,8 +13,7 @@ export default function Notification() {
           params: { isPendingApproval: true },
         });
 
-        // Filter customers that are pending approval and have either paidStatus or visitStatus as true
-        const approvals = response.data.data.filter(customer => 
+        const approvals = response.data.data.filter(customer =>
           customer.isPendingApproval && (customer.paidStatus || customer.visitStatus)
         );
 
@@ -39,7 +38,6 @@ export default function Notification() {
 
       if (response.data.success) {
         alert("Status approved successfully");
-        // Remove the approved customer from the list
         setPendingApprovals((prev) =>
           prev.filter((customer) => customer._id !== customerId)
         );
@@ -58,36 +56,38 @@ export default function Notification() {
       {pendingApprovals.length === 0 ? (
         <p>No pending approvals.</p>
       ) : (
-        <table className="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
-          <thead>
-            <tr className="bg-gray-700">
-              <th className="py-2 px-4 text-left">Name</th>
-              <th className="py-2 px-4 text-left">Email</th>
-              <th className="py-2 px-4 text-left">Pending Status</th>
-              <th className="py-2 px-4 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pendingApprovals.map((customer) => (
-              <tr key={customer._id} className="hover:bg-gray-700">
-                <td className="py-2 px-4">{customer.name}</td>
-                <td className="py-2 px-4">{customer.email}</td>
-                <td className="py-2 px-4">
-                  {customer.paidStatus && "Paid, "}
-                  {customer.visitStatus && "Visited"}
-                </td>
-                <td className="py-2 px-4">
-                  <button
-                    onClick={() => handleApproval(customer._id)}
-                    className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
-                  >
-                    Approve
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-gray-800 text-white rounded-lg overflow-hidden">
+            <thead>
+              <tr className="bg-gray-700">
+                <th className="py-2 px-4 text-left">Name</th>
+                <th className="py-2 px-4 text-left">Email</th>
+                <th className="py-2 px-4 text-left">Pending Status</th>
+                <th className="py-2 px-4 text-left">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {pendingApprovals.map((customer) => (
+                <tr key={customer._id} className="hover:bg-gray-700">
+                  <td className="py-2 px-4">{customer.name}</td>
+                  <td className="py-2 px-4">{customer.email}</td>
+                  <td className="py-2 px-4">
+                    {customer.paidStatus && "Paid, "}
+                    {customer.visitStatus && "Visited"}
+                  </td>
+                  <td className="py-2 px-4">
+                    <button
+                      onClick={() => handleApproval(customer._id)}
+                      className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    >
+                      Approve
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

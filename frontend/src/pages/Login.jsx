@@ -39,8 +39,8 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form onSubmit={handleLogin} className="w-96 bg-white p-8 shadow-lg rounded-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <form onSubmit={handleLogin} className="w-full max-w-sm bg-white p-8 shadow-lg rounded-lg">
         <h1 className="text-2xl font-bold text-center mb-6">Login</h1>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <div className="mb-4">
@@ -48,7 +48,7 @@ export default function Login({ onLogin }) {
           <input
             type="email"
             id="email"
-            className="w-full p-2 border border-gray-300 rounded mt-1"
+            className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-blue-500"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -59,13 +59,13 @@ export default function Login({ onLogin }) {
           <input
             type="password"
             id="password"
-            className="w-full p-2 border border-gray-300 rounded mt-1"
+            className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-blue-500"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
           Login
         </button>
       </form>

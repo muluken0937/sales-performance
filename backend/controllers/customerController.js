@@ -161,3 +161,51 @@ exports.aprovePending = async (req, res) => {
       res.status(400).json({ success: false, error: err.message });
   }
 };
+
+// Controller to get visit and payment statuses by period
+
+
+exports.getStatusCounts = async (req, res) => {
+  try {
+    const { period = "daily" } = req.query;
+    let groupByFormat;
+    let startDate = new Date();
+
+    if (period === "daily") {
+      groupByFormat = "%Y-%m-%d";
+      startDate.setHours(0, 0, 0, 0);
+    } else if (period === "weekly") {
+      groupByFormat = "%Y-%U";
+      startDate.setDate(startDate.getDate() - 7);
+    } else if (period === "monthly") {
+      groupByFormat = "%Y-%m";
+      startDate.setMonth(startDate.getMonth() - 1);
+    } else {
+      return res.status(400).json({ success: false, message: "Invalid period specified. Use 'daily', 'weekly', or 'monthly'." });
+    }
+
+    const statusCounts = await Customer.aggregate([
+      { $match: { createdAt: { $gte: startDate } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: groupByFormat, date: "$createdAt" } },
+          visitCount: { $sum: { $cond: ["$visitStatus", 1, 0] } },
+          paidCount: { $sum: { $cond: ["$paidStatus", 1, 0] } },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: statusCounts,
+    });
+  } catch (err) {
+    console.error("Error fetching status counts:", err.message);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error while fetching status counts",
+      error: err.message,
+    });
+  }
+};

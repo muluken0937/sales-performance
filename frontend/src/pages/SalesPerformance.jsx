@@ -38,7 +38,7 @@ const SalesPerformance = () => {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 flex-wrap">
         <h2 className="text-3xl font-bold">Sales Performance</h2>
         <span className="text-lg font-semibold">{filteredCustomers.length} Customers</span>
       </div>
@@ -46,7 +46,7 @@ const SalesPerformance = () => {
       <div className="mb-4">
         <label className="block text-lg font-semibold mb-2">Select Sales User:</label>
         <select
-          className="border rounded px-4 py-2"
+          className="border rounded px-4 py-2 w-full md:w-auto"
           value={selectedSalesUser}
           onChange={(e) => setSelectedSalesUser(e.target.value)}
         >

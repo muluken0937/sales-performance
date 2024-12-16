@@ -39,9 +39,9 @@ function AdminRegister() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="w-full max-w-md p-8 bg-white shadow-md rounded-lg">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">Register Admin</h1>
+        <h1 className="text-2xl font-bold mb-6 text-gray-800 text-center">Register Admin</h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
