@@ -1,4 +1,6 @@
 const Customer = require('../models/Customer');  
+const mongoose = require('mongoose'); 
+
 
 // Create a new customer
 exports.createCustomer = async (req, res) => {
@@ -163,14 +165,13 @@ exports.aprovePending = async (req, res) => {
 };
 
 // Controller to get visit and payment statuses by period
-
-
 exports.getStatusCounts = async (req, res) => {
   try {
     const { period = "daily" } = req.query;
     let groupByFormat;
     let startDate = new Date();
 
+    // Determine the date range based on the period
     if (period === "daily") {
       groupByFormat = "%Y-%m-%d";
       startDate.setHours(0, 0, 0, 0);
@@ -184,8 +185,15 @@ exports.getStatusCounts = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid period specified. Use 'daily', 'weekly', or 'monthly'." });
     }
 
+    // Filter based on the user's role
+    const matchQuery = { createdAt: { $gte: startDate } };
+
+    if (req.user.role === "SalesUser") {
+      matchQuery.createdBy = new mongoose.Types.ObjectId(req.user.id); // Corrected line
+    }
+
     const statusCounts = await Customer.aggregate([
-      { $match: { createdAt: { $gte: startDate } } },
+      { $match: matchQuery },
       {
         $group: {
           _id: { $dateToString: { format: groupByFormat, date: "$createdAt" } },

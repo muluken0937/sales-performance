@@ -1,104 +1,4 @@
-// import React, { useEffect, useState } from "react";
-// import { BarChart } from "@mui/x-charts";
 
-// export default function Dashboard() {
-//   const [data, setData] = useState([]);
-//   const [period, setPeriod] = useState("daily");
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-  
-//   // Retrieve the user's name from local storage
-//   const userName = localStorage.getItem("userName") || "User"; // Fallback to "User"
-
-//   useEffect(() => {
-//     const fetchStatusCounts = async () => {
-//       setLoading(true);
-//       setError(null);
-
-//       try {
-//         const response = await fetch(
-//           `http://localhost:5000/api/customers/status-counts?period=${period}`,
-//           {
-//             method: "GET",
-//             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-//           }
-//         );
-
-//         if (!response.ok) {
-//           throw new Error(`Failed to fetch data: ${response.statusText}`);
-//         }
-
-//         const result = await response.json();
-//         if (result.success) {
-//           setData(
-//             result.data.map((item) => ({
-//               label: item._id,
-//               visitCount: item.visitCount,
-//               paidCount: item.paidCount,
-//             }))
-//           );
-//         } else {
-//           throw new Error(result.message || "Unknown error occurred");
-//         }
-//       } catch (err) {
-//         setError(err.message);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchStatusCounts();
-//   }, [period]);
-
-//   return (
-//     <div className="flex h-screen">
-//       <main className="flex-1 bg-gray-100 p-6">
-//         <header className="flex justify-between items-center border-b pb-4 mb-4">
-//           <h2 className="text-xl font-semibold">Dashboard</h2>
-//           <div>
-//             <select
-//               value={period}
-//               onChange={(e) => setPeriod(e.target.value)}
-//               className="bg-gray-200 px-4 py-2 rounded"
-//             >
-//               <option value="daily">Daily</option>
-//               <option value="weekly">Weekly</option>
-//               <option value="monthly">Monthly</option>
-//             </select>
-//           </div>
-//         </header>
-
-//         {/* Welcome Message */}
-//         <div className="mb-4">
-//           <h3 className="text-lg font-semibold">Welcome, {userName}!</h3>
-//         </div>
-
-//         <div className="bg-white rounded shadow p-6">
-//           <h3 className="text-lg font-semibold mb-4">
-//             {period.charAt(0).toUpperCase() + period.slice(1)} Status Counts
-//           </h3>
-//           {loading ? (
-//             <p className="text-gray-500">Loading...</p>
-//           ) : error ? (
-//             <p className="text-red-500">Error: {error}</p>
-//           ) : data.length > 0 ? (
-//             <BarChart
-//               xAxis={[{ data: data.map((item) => item.label), scaleType: "band" }]}
-//               series={[
-//                 { data: data.map((item) => item.visitCount), label: "Visits" },
-//                 { data: data.map((item) => item.paidCount), label: "Payments" },
-//               ]}
-//               height={300}
-//               legend={{ position: { vertical: 'top', horizontal: 'middle' } }} // Updated to 'middle'
-//             />
-//           ) : (
-//             <p className="text-gray-500">No data available for the selected period.</p>
-//           )}
-//         </div>
-//       </main>
-//     </div>
-//   );
-// }
 import React, { useEffect, useState } from "react";
 import { PieChart } from "@mui/x-charts";
 import { useDrawingArea } from '@mui/x-charts/hooks';
@@ -127,15 +27,15 @@ function PieCenterLabel({ children }) {
 }
 
 export default function Dashboard() {
-  const [customers, setCustomers] = useState([]); // State for all customers
-  const [data, setData] = useState([]); // State for bar chart data
+  const [customers, setCustomers] = useState([]); 
+  const [data, setData] = useState([]); 
   const [period, setPeriod] = useState("daily");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalCustomers, setTotalCustomers] = useState(0);
   const [pieData, setPieData] = useState([]);
 
-  const userName = localStorage.getItem("userName") || "User"; // Fallback to "User"
+  const userName = localStorage.getItem("userName") || "User"; 
 
   // Fetch all customers
   useEffect(() => {
@@ -183,17 +83,17 @@ export default function Dashboard() {
   
       // Check for neither first
       if (!paidStatus && !visitStatus && !isPendingApproval) {
-        counts.neither += 1; // Both paid and visited are false
+        counts.neither += 1; 
       } else if (paidStatus && !visitStatus && !isPendingApproval) {
-        counts.paid += 1; // Paid only
+        counts.paid += 1; 
       } else if (!paidStatus && visitStatus && !isPendingApproval) {
-        counts.visited += 1; // Visited only
+        counts.visited += 1; 
       } else if (paidStatus && visitStatus && !isPendingApproval) {
-        counts.both += 1; // Both paid and visited
+        counts.both += 1; 
       }
     });
   
-    setTotalCustomers(data.length); // Total customers
+    setTotalCustomers(data.length); 
     setPieData([
       { value: counts.paid, label: 'Paid' },
       { value: counts.visited, label: 'Visited' },
@@ -206,7 +106,7 @@ export default function Dashboard() {
     const fetchStatusCounts = async () => {
       setLoading(true);
       setError(null);
-
+  
       try {
         const response = await fetch(
           `http://localhost:5000/api/customers/status-counts?period=${period}`,
@@ -215,11 +115,11 @@ export default function Dashboard() {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
           }
         );
-
+  
         if (!response.ok) {
           throw new Error(`Failed to fetch data: ${response.statusText}`);
         }
-
+  
         const result = await response.json();
         if (result.success) {
           setData(
@@ -238,9 +138,10 @@ export default function Dashboard() {
         setLoading(false);
       }
     };
-
+  
     fetchStatusCounts();
   }, [period]);
+  
 
   return (
     <div className="flex flex-col h-screen">
