@@ -13,7 +13,7 @@ import UpdateProfile from './pages/UpdateProfile';
 import Profile from './pages/Profile'; 
 import CustomerList from './pages/CustomerList'; 
 import Notification from './pages/Notification';
-import SalesPerformance from './pages/SalesPerformance'; // Import SalesPerformance
+import SalesPerformance from './pages/SalesPerformance';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -44,7 +44,7 @@ function App() {
           <Navbar onLogout={handleLogout} />
           <div className="flex">
             <Sidebar />
-            <main className="flex-1 ml-52">
+            <main className="flex-1 ml-52 mt-16"> {/* Add margin for navbar */}
               <Routes>
                 <Route path="/" element={<Navigate to="/login" replace />} />
                 <Route path="/login" element={<Login onLogin={handleLogin} />} />
@@ -90,7 +90,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/sales-performance" // Add route for SalesPerformance
+                  path="/sales-performance" 
                   element={
                     <ProtectedRoute>
                       <SalesPerformance />
@@ -111,7 +111,7 @@ function App() {
           </div>
         </>
       )}
-      
+
       {location.pathname === '/login' && <Login onLogin={handleLogin} />}
     </>
   );
