@@ -169,7 +169,7 @@ export default function Dashboard() {
         <div className="flex flex-col lg:flex-row">
           {/* Pie Chart */}
           <div className="w-full lg:w-1/3 mb-4 lg:mr-14">
-            <h3 className="text-lg text-red-600 font-semibold mb-4">Total Customers</h3>
+            <h3 className="text-lg text-green-600 font-semibold mb-4">Total Customers</h3>
             <PieChart series={[{ data: pieData, innerRadius: 80 }]} {...size}>
               <PieCenterLabel>{totalCustomers}</PieCenterLabel>
             </PieChart>
@@ -177,7 +177,7 @@ export default function Dashboard() {
 
           {/* Bar Chart */}
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-red-600 mb-4">
+            <h3 className="text-lg font-semibold text-green-600 mb-4">
               {period.charAt(0).toUpperCase() + period.slice(1)} Status Counts
             </h3>
             {loading ? (
