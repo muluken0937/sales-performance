@@ -44,7 +44,7 @@ import TabBar from "../components/TabBar";
 import Navbar from "../components/Navbar";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import LoginScreen from "../screens/Login";
-import UpdateProfile from "../screens/UpdateProfile"; 
+import UpdateProfile from "../screens/UpdateProfile";
 
 const Stack = createStackNavigator();
 
@@ -62,6 +62,11 @@ const _layout = () => {
     setIsLoggedIn(true);
   };
 
+  const handleLogout = () => {
+    console.log("Logging out");
+    setIsLoggedIn(false);
+  };
+
   if (showWelcome) {
     return <WelcomeScreen onContinue={handleContinueFromWelcome} />;
   }
@@ -72,25 +77,26 @@ const _layout = () => {
 
   return (
     <Stack.Navigator initialRouteName="Tabs">
-      {/* Tab Navigator inside a Stack Navigator */}
       <Stack.Screen name="Tabs" options={{ headerShown: false }}>
         {() => (
           <Tabs tabBar={(props) => <TabBar {...props} />}>
             <Tabs.Screen
               name="index"
               options={{
-                header: () => <Navbar />, // Use Navbar here
+                header: () => <Navbar onLogout={handleLogout} />, // Pass handleLogout
                 title: "Dashboard",
               }}
             />
             <Tabs.Screen name="explore" options={{ title: "Explore" }} />
             <Tabs.Screen name="profile" options={{ title: "Profile" }} />
             <Tabs.Screen name="create" options={{ title: "Create" }} />
+            <Tabs.Screen
+              name="CreateCustomer"
+              options={{ title: "Customer" }}
+            />
           </Tabs>
         )}
       </Stack.Screen>
-
-      {/* Update Profile Screen */}
       <Stack.Screen
         name="UpdateProfile"
         component={UpdateProfile}
