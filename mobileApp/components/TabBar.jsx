@@ -15,11 +15,11 @@ const TabBar = ({ state, descriptors, navigation, userRole }) => {
   };
 
   const filteredRoutes = state.routes.filter((route) => {
-    if (userRole !== "SalesManager" && route.name === "Customer") return false;
-    if (userRole === "SalesUser" && route.name === "create") return false;
-    if (userRole !== "Admin" && route.name === "Customer") return false;
-    return true;
+    if (userRole === "SalesUser" && route.name === "create") return false; 
+    if (userRole === "SalesUser" && route.name === "CreateCustomer") return false; 
+    return true; 
   });
+  
 
   return (
     <View style={styles.tabbar}>
