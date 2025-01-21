@@ -8,17 +8,19 @@ const TabBar = ({ state, descriptors, navigation, userRole }) => {
 
   const icons = {
     index: (props) => <AntDesign name="home" size={26} color={greyColor} {...props} />,
-    explore: (props) => <Feather name="compass" size={26} color={greyColor} {...props} />,
-    create: (props) => <Ionicons name="create" size={26} color={greyColor} {...props} />,
-    CreateCustomer: (props) => <Ionicons name="person-add" size={26} color={greyColor} {...props} />,
+    explore: (props) => <Feather name="list" size={26} color={greyColor} {...props} />,
+    create: (props) => <Ionicons name="person-add" size={26} color={greyColor} {...props} />,
+    CreateCustomer: (props) => <Ionicons name="create" size={26} color={greyColor} {...props} />,
     profile: (props) => <AntDesign name="profile" size={26} color={greyColor} {...props} />,
   };
 
   const filteredRoutes = state.routes.filter((route) => {
-    if (userRole === "SalesUser" && route.name === "create") return false; 
-    if (userRole === "SalesUser" && route.name === "CreateCustomer") return false; 
+    if (route.name === "create" && userRole === "SalesUser") {
+      return false; 
+    }
     return true; 
   });
+
   
 
   return (
