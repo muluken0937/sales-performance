@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axiosInstance from "../hooks/axiosInstance"; // Ensure this path is correct
+import axiosInstance from "../hooks/axiosInstance"; 
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -29,8 +29,8 @@ export default function Login({ onLogin }) {
       await AsyncStorage.setItem("userName", response.data.data.name);
       await AsyncStorage.setItem("userImage", response.data.data.profileImage || "");
 
-      setError(""); // Clear any previous error messages
-      onLogin(); // Trigger the login success callback
+      setError(""); 
+      onLogin(); 
     } catch (err) {
       const errorMessage =
         err.response?.data?.message || "Network error. Please try again.";

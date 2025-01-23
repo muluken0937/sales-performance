@@ -9,7 +9,7 @@ import {
   Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axiosInstance from "../hooks/axiosInstance"; // Import axiosInstance
+import axiosInstance from "../hooks/axiosInstance"; 
 
 export default function CustomerList() {
   const [customers, setCustomers] = useState([]);

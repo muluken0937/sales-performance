@@ -427,9 +427,12 @@ const SalesPerformance = () => {
               <Text style={styles.modalText}>Phone: {selectedCustomer.phoneNumber}</Text>
               <Text style={styles.modalText}>Location: {selectedCustomer.location}</Text>
               
+              <Text style={styles.modalText}>
+                <Text style={styles.boldText}>Description:</Text>
+              </Text>
               <ScrollView style={styles.descriptionContainer}>
                 <Text style={styles.modalText}>
-                  Description: {showFullDescription ? selectedCustomer.description : selectedCustomer.description?.substring(0, 100) + '...'}
+                  {showFullDescription ? selectedCustomer.description : selectedCustomer.description?.substring(0, 100) + '...'}
                 </Text>
               </ScrollView>
               
@@ -494,6 +497,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f8f8f8",
     padding: 16,
+    marginBottom: 30,
   },
   title: {
     fontSize: 24,
@@ -622,6 +626,9 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     fontSize: 16,
+  },
+  boldText: {
+    fontWeight: "bold",
   },
 });
 
