@@ -1,18 +1,13 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import React from 'react';
 import { AntDesign, Feather, Ionicons } from '@expo/vector-icons';
+import TabBarButton from './TabBarButton';
 
 const TabBar = ({ state, descriptors, navigation, userRole }) => {
   const primaryColor = '#0891b2';
   const greyColor = '#737373';
 
-  const icons = {
-    index: (props) => <AntDesign name="home" size={26} color={greyColor} {...props} />,
-    explore: (props) => <Feather name="list" size={26} color={greyColor} {...props} />,
-    create: (props) => <Ionicons name="person-add" size={26} color={greyColor} {...props} />,
-    CreateCustomer: (props) => <Ionicons name="create" size={26} color={greyColor} {...props} />,
-    profile: (props) => <AntDesign name="profile" size={26} color={greyColor} {...props} />,
-  };
+  
 
   const filteredRoutes = state.routes.filter((route) => {
     if (route.name === "create" && userRole === "SalesUser") {
@@ -56,26 +51,21 @@ const TabBar = ({ state, descriptors, navigation, userRole }) => {
             target: route.key,
           });
         };
-
-        return (
-          <TouchableOpacity
-            accessibilityRole="button"
+        return(
+          <TabBarButton 
             key={route.name}
             style={styles.tabbarItem}
-            accessibilityState={isFocused ? { selected: true } : {}}
-            accessibilityLabel={options.tabBarAccessibilityLabel}
-            testID={options.tabBarTestID}
             onPress={onPress}
             onLongPress={onLongPress}
-          >
-            {icons[route.name]({
-              color: isFocused ? primaryColor : greyColor
-            })}
-            <Text style={{ color: isFocused ? primaryColor : greyColor, fontSize: 11 }}>
-              {label}
-            </Text>
-          </TouchableOpacity>
-        );
+            routeName={route.name}
+            isFocused={isFocused}
+            color={isFocused? primaryColor: greyColor}
+            label={label}
+
+          />
+        )
+
+      
       })}
     </View>
   );
@@ -84,25 +74,23 @@ const TabBar = ({ state, descriptors, navigation, userRole }) => {
 const styles = StyleSheet.create({
   tabbar: {
     position: 'absolute',
-    bottom: 2,
+    bottom: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'white',
-    marginHorizontal: 2,
-    paddingVertical: 15,
-    borderRadius: 20,
+    // marginHorizontal: 0,
+    paddingVertical: 8,
+    padding: 3,
+
+    // borderRadius: 20,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 10 },
     shadowRadius: 10,
     shadowOpacity: 0.3,
     elevation: 5,
   },
-  tabbarItem: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  
 });
 
 export default TabBar;

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Image, // Import Image component
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axiosInstance from "../hooks/axiosInstance"; 
@@ -41,6 +42,11 @@ export default function Login({ onLogin }) {
 
   return (
     <View style={styles.container}>
+      {/* Image at the top */}
+      <Image
+        source={require('../assets/images/img.jpeg')} // Adjust the path as needed
+        style={styles.logo}
+      />
       <Text style={styles.title}>Login</Text>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
       <TextInput
@@ -73,12 +79,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#f4f4f4",
+    backgroundColor: "#ffffff",
+  },
+  logo: {
+    width: 400, // Adjust the width as needed
+    height: 200, // Adjust the height as needed
+    resizeMode: 'contain', // Maintain aspect ratio
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    
   },
   errorText: {
     color: "red",
@@ -98,6 +110,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: "100%",
     alignItems: "center",
+    marginBottom: 150,
+    marginTop: 50
   },
   buttonText: {
     color: "#fff",

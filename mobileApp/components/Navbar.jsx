@@ -1,8 +1,8 @@
-
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"; // Import MaterialCommunityIcons
 import axiosInstance from "../hooks/axiosInstance";
 
 export default function Navbar({ onLogout }) {
@@ -92,8 +92,8 @@ export default function Navbar({ onLogout }) {
             )}
           </TouchableOpacity>
         )}
-        <TouchableOpacity onPress={onLogout}>
-          <Text style={styles.logout}>Logout</Text>
+        <TouchableOpacity onPress={onLogout} style={styles.logoutIcon}>
+          <MaterialCommunityIcons name="logout" size={25} color="#CC0000" />
         </TouchableOpacity>
       </View>
     </View>
@@ -157,9 +157,11 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 10,
     borderRadius: 10,
-    padding: 2,
+    padding: 4,
   },
-  logout: {
-    color: "red",
+  logoutIcon: {
+    padding: 2,
+    size:5, 
+    
   },
 });
