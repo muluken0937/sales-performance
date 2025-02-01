@@ -1,189 +1,242 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Alert, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Alert,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import axiosInstance from '../hooks/axiosInstance'; 
+import axiosInstance from '../hooks/axiosInstance';
 
 const UpdateCustomer = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { customerId } = route.params;
 
-  const [customerData, setCustomerData] = useState({
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     phoneNumber: '',
     location: '',
-    description: '',
   });
-  
+
+  const [descriptions, setDescriptions] = useState([]);
   const [newDescription, setNewDescription] = useState('');
 
+  // Fetch customer data on component mount
   useEffect(() => {
     const fetchCustomer = async () => {
       try {
         const response = await axiosInstance.get(`/customers/${customerId}`);
-        if (response.data && response.data.success) {
-          const data = response.data.data; 
-          setCustomerData({
+        if (response.data?.success) {
+          const data = response.data.data;
+          setFormData({
             name: data.name || '',
             email: data.email || '',
             phoneNumber: data.phoneNumber || '',
             location: data.location || '',
-            description: data.description || '',
           });
-        } else {
-          throw new Error('Failed to fetch customer data');
+          setDescriptions(data.descriptions || []);
         }
       } catch (error) {
-        console.error('Error fetching customer data:', error.message);
-        Alert.alert('Error', 'Failed to fetch customer data.');
+        Alert.alert('Error', 'Failed to fetch customer data');
       }
     };
     fetchCustomer();
   }, [customerId]);
 
-  const handleChange = (name, value) => {
-    setCustomerData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  // Handle changes in form fields
+  const handleFieldChange = (name, value) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleNewDescriptionChange = (value) => {
-    setNewDescription(value);
-  };
-
-  const handleAddDescription = () => {
-    if (newDescription.trim()) {
-      const timestamp = new Date().toLocaleString();
-      const updatedDescription = `${customerData.description}\n[${timestamp}] ${newDescription}`;
-      setCustomerData((prev) => ({
-        ...prev,
-        description: updatedDescription,
-      }));
-      setNewDescription('');
-    } else {
+  // Add a new description
+  const handleAddDescription = async () => {
+    if (!newDescription.trim()) {
       Alert.alert('Error', 'Description cannot be empty.');
+      return;
+    }
+
+    try {
+      // Send only the new description to be appended
+      const response = await axiosInstance.put(`/customers/${customerId}`, {
+        ...formData,
+        description: newDescription, // This will trigger the backend's append logic
+      });
+
+      // Update local state with the new description from response
+      setDescriptions(response.data.data.descriptions);
+      setNewDescription('');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to add description');
     }
   };
 
+  // Update customer details
   const handleSubmit = async () => {
     try {
-      await axiosInstance.put(`/customers/${customerId}`, customerData);
+      // Update main fields without sending description
+      await axiosInstance.put(`/customers/${customerId}`, formData);
       Alert.alert('Success', 'Customer updated successfully!');
       navigation.goBack();
     } catch (error) {
-      console.error('Error updating customer:', error.response?.data?.message || error.message);
-      Alert.alert('Error', 'Failed to update customer.');
+      Alert.alert('Error', 'Failed to update customer details');
     }
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.label}>Name:</Text>
-      <TextInput
-        style={styles.input}
-        value={customerData.name}
-        onChangeText={(value) => handleChange('name', value)}
+    <View style={styles.container}>
+      <FlatList
+        data={descriptions}
+        keyExtractor={(item, index) => index.toString()}
+        ListHeaderComponent={
+          <>
+            {/* Form Fields */}
+            <Text style={styles.label}>Name:</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.name}
+              onChangeText={(v) => handleFieldChange('name', v)}
+            />
+
+            <Text style={styles.label}>Email:</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.email}
+              onChangeText={(v) => handleFieldChange('email', v)}
+            />
+
+            <Text style={styles.label}>Phone Number:</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.phoneNumber}
+              onChangeText={(v) => handleFieldChange('phoneNumber', v)}
+            />
+
+            <Text style={styles.label}>Location:</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.location}
+              onChangeText={(v) => handleFieldChange('location', v)}
+            />
+
+            {/* New Description Input */}
+            <Text style={styles.sectionTitle}>Add New Description</Text>
+            <TextInput
+              style={[styles.input, styles.descriptionInput]}
+              placeholder="Enter new description"
+              value={newDescription}
+              onChangeText={setNewDescription}
+              multiline
+            />
+
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={handleAddDescription}
+            >
+              <Text style={styles.buttonText}>Add Description</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.sectionTitle}>Description History</Text>
+          </>
+        }
+        renderItem={({ item }) => (
+          <View style={styles.descriptionCard}>
+            <Text style={styles.descriptionText}>{item.text}</Text>
+            <Text style={styles.timestamp}>
+              {new Date(item.createdAt).toLocaleString()}
+            </Text>
+          </View>
+        )}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No descriptions yet</Text>
+        }
+        ListFooterComponent={
+          <TouchableOpacity style={styles.updateButton} onPress={handleSubmit}>
+            <Text style={styles.buttonText}>Save Customer Details</Text>
+          </TouchableOpacity>
+        }
+        contentContainerStyle={styles.contentContainer}
       />
-      <Text style={styles.label}>Email:</Text>
-      <TextInput
-        style={styles.input}
-        value={customerData.email}
-        onChangeText={(value) => handleChange('email', value)}
-      />
-      <Text style={styles.label}>Phone Number:</Text>
-      <TextInput
-        style={styles.input}
-        value={customerData.phoneNumber}
-        onChangeText={(value) => handleChange('phoneNumber', value)}
-      />
-      <Text style={styles.label}>Location:</Text>
-      <TextInput
-        style={styles.input}
-        value={customerData.location}
-        onChangeText={(value) => handleChange('location', value)}
-      />
-      <Text style={styles.label}>Current Description:</Text>
-      <TextInput
-        style={[styles.input, { height: 80 }]} // Independent height for current description
-        value={customerData.description}
-        editable={false}
-        multiline
-        textAlignVertical="top"
-      />
-      <Text style={styles.label}>Add New Description:</Text>
-      <View style={styles.addDescriptionContainer}>
-        <TextInput
-          style={[styles.input, styles.newDescriptionInput]} // Fixed height for new description
-          value={newDescription}
-          onChangeText={handleNewDescriptionChange}
-          multiline
-          textAlignVertical="top"
-        />
-        <TouchableOpacity style={styles.addButton} onPress={handleAddDescription}>
-          <Text style={styles.buttonText}>Add</Text>
-        </TouchableOpacity>
-      </View>
-      <TouchableOpacity style={styles.updateButton} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Update Customer</Text>
-      </TouchableOpacity>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  contentContainer: {
     padding: 16,
-    backgroundColor: '#f8f8f8',
   },
   label: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
-    marginTop: 12,
     color: '#333',
   },
   input: {
-    borderColor: '#cccccc',
     borderWidth: 1,
+    borderColor: '#ccc',
     borderRadius: 5,
-    paddingHorizontal: 10,
-    backgroundColor: '#ffffff',
+    padding: 12,
     marginBottom: 16,
     fontSize: 16,
+    backgroundColor: '#f8f8f8',
   },
-  addDescriptionContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 16,
+  descriptionInput: {
+    height: 100,
+    textAlignVertical: 'top',
   },
-  newDescriptionInput: {
-    height: 80, // Fixed height for new description
-    flex: 1, // Allow the input to take available space
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginVertical: 16,
+    color: '#333',
+  },
+  descriptionCard: {
+    backgroundColor: '#f8f8f8',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+  },
+  descriptionText: {
+    fontSize: 16,
+    color: '#444',
+  },
+  timestamp: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 8,
+  },
+  emptyText: {
+    color: '#999',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    marginVertical: 16,
   },
   addButton: {
-    backgroundColor: '#FFA500', // Orange color for the button
+    backgroundColor: '#4CAF50',
     borderRadius: 5,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
+    padding: 14,
     alignItems: 'center',
-    marginLeft: 10,
-    justifyContent: 'center', // Center button text vertically
+    marginVertical: 8,
   },
   updateButton: {
-    backgroundColor: '#007BFF', // Blue color for "Update Customer"
+    backgroundColor: '#2196F3',
     borderRadius: 5,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    padding: 14,
     alignItems: 'center',
-    marginBottom: 10,
+    marginVertical: 16,
   },
   buttonText: {
-    color: '#ffffff',
+    color: 'white',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
 });
 

@@ -57,24 +57,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 50,
     textAlign: 'center',
-    color: '#FFFFFF',
+    color: '#FFA700',
     textShadowColor: '#000',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
   },
   descriptionContainer: {
-    backgroundColor: 'rgba(3, 7, 0, 0.2)', // Semi-transparent background
-    borderRadius: 10, // Rounded corners
-    paddingHorizontal: 100, // Inner padding for the text
+    backgroundColor: 'rgba(3, 7, 0, 0.2)', 
+    borderRadius: 10,
+    paddingHorizontal: 100, 
     marginBottom: 60,
   },
   description: {
     fontSize: 18,
-    fontWeight: '300',
+    fontWeight: '10',
     textAlign: 'center',
-    color: '#FFFFFF',
-    lineHeight: 20,
-    fontFamily: "Montserrat",
+    color: '#f7ff7f',
+    lineHeight: 29,
+    fontFamily: "Times New Roman",
+    fontStyle:"italic"
     
   },
   logo: {

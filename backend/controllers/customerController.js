@@ -165,31 +165,48 @@ exports.aprovePending = async (req, res) => {
 };
 
 // Controller to get visit and payment statuses by period
+
+
 exports.getStatusCounts = async (req, res) => {
   try {
     const { period = "daily" } = req.query;
     let groupByFormat;
     let startDate = new Date();
+    let endDate = new Date();
 
     // Determine the date range based on the period
-    if (period === "daily") {
-      groupByFormat = "%Y-%m-%d";
-      startDate.setHours(0, 0, 0, 0);
-    } else if (period === "weekly") {
-      groupByFormat = "%Y-%U";
-      startDate.setDate(startDate.getDate() - 7);
-    } else if (period === "monthly") {
-      groupByFormat = "%Y-%m";
-      startDate.setMonth(startDate.getMonth() - 1);
-    } else {
-      return res.status(400).json({ success: false, message: "Invalid period specified. Use 'daily', 'weekly', or 'monthly'." });
+    switch (period) {
+      case "daily":
+        groupByFormat = "%Y-%m-%d";
+        startDate.setDate(startDate.getDate() - startDate.getDay());
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999); // End of the day
+        break;
+      case "weekly":
+        groupByFormat = "%Y-%U";
+        startDate.setDate(startDate.getDate() - 7);
+        break;
+      case "monthly":
+        groupByFormat = "%Y-%m";
+        startDate.setMonth(startDate.getMonth() - 1);
+        break;
+      case "yearly":
+        groupByFormat = "%Y";
+        startDate.setFullYear(startDate.getFullYear() - 1); // Set to one year ago
+        break;
+      default:
+        return res.status(400).json({
+          success: false,
+          message: "Invalid period specified. Use 'daily', 'weekly', 'monthly', or 'yearly'."
+        });
     }
 
-    // Filter based on the user's role
-    const matchQuery = { createdAt: { $gte: startDate } };
+    const matchQuery = (period === "daily") 
+      ? { createdAt: { $gte: startDate, $lte: endDate } } 
+      : { createdAt: { $gte: startDate } };
 
     if (req.user.role === "SalesUser") {
-      matchQuery.createdBy = new mongoose.Types.ObjectId(req.user.id); // Corrected line
+      matchQuery.createdBy = new mongoose.Types.ObjectId(req.user.id);
     }
 
     const statusCounts = await Customer.aggregate([
@@ -203,6 +220,33 @@ exports.getStatusCounts = async (req, res) => {
       },
       { $sort: { _id: 1 } },
     ]);
+
+    // If the period is daily, ensure to fill in the missing days of the week
+if (period === "daily") {
+  const daysOfWeek = [];
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(startDate);
+    day.setDate(startDate.getDate() + i);
+    
+    // Format to MM-DD
+    const formattedDate = `${day.getMonth() + 1}-${day.getDate()}`; // MM-DD format
+    const existingData = statusCounts.find(item => {
+      // Format the existing data to MM-DD for comparison
+      const itemDate = new Date(item._id);
+      return `${itemDate.getMonth() + 1}-${itemDate.getDate()}` === formattedDate;
+    });
+
+    daysOfWeek.push({
+      _id: formattedDate, // Use formattedDate for display
+      visitCount: existingData ? existingData.visitCount : 0,
+      paidCount: existingData ? existingData.paidCount : 0,
+    });
+  }
+  return res.status(200).json({
+    success: true,
+    data: daysOfWeek,
+  });
+}
 
     res.status(200).json({
       success: true,

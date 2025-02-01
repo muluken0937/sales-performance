@@ -1,266 +1,3 @@
-// import React, { useState, useEffect } from "react";
-// import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, ActivityIndicator } from "react-native";
-// import axiosInstance from "../hooks/axiosInstance";
-
-// const SalesPerformance = () => {
-//   const [customers, setCustomers] = useState([]);
-//   const [selectedCustomer, setSelectedCustomer] = useState(null);
-//   const [selectedSalesUser, setSelectedSalesUser] = useState("");
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-
-//   useEffect(() => {
-//     const fetchCustomers = async () => {
-//       try {
-//         const response = await axiosInstance.get("/customers");
-//         setCustomers(response.data.data);
-//       } catch (err) {
-//         setError("Error fetching customers. Please try again.");
-//         console.error(err);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchCustomers();
-//   }, []);
-
-//   const handleCustomerClick = (customer) => {
-//     setSelectedCustomer(customer);
-//   };
-
-//   const handleCloseDetail = () => {
-//     setSelectedCustomer(null);
-//   };
-
-//   // Extract unique sales users from customers
-//   const salesUsers = [...new Set(customers.map((customer) => customer.createdBy.name))];
-
-//   const filteredCustomers = selectedSalesUser
-//     ? customers.filter((customer) => customer.createdBy.name === selectedSalesUser)
-//     : customers;
-
-//   if (loading) {
-//     return (
-//       <View style={styles.center}>
-//         <ActivityIndicator size="large" color="#0000ff" />
-//       </View>
-//     );
-//   }
-
-//   if (error) {
-//     return (
-//       <View style={styles.center}>
-//         <Text style={styles.errorText}>{error}</Text>
-//       </View>
-//     );
-//   }
-
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.title}>Sales Performance</Text>
-//       <Text style={styles.subtitle}>{filteredCustomers.length} Customers</Text>
-
-//       <View style={styles.dropdownContainer}>
-//         <Text style={styles.label}>Select Sales User:</Text>
-//         <FlatList
-//           horizontal
-//           data={["All Users", ...salesUsers]}
-//           keyExtractor={(item, index) => index.toString()}
-//           renderItem={({ item }) => (
-//             <TouchableOpacity
-//               style={[
-//                 styles.filterButton,
-//                 item === selectedSalesUser ? styles.filterButtonActive : null,
-//               ]}
-//               onPress={() => setSelectedSalesUser(item === "All Users" ? "" : item)}
-//             >
-//               <Text style={styles.filterButtonText}>{item}</Text>
-//             </TouchableOpacity>
-//           )}
-//         />
-//       </View>
-
-//       <FlatList
-//         data={filteredCustomers}
-//         keyExtractor={(item) => item._id}
-//         renderItem={({ item }) => (
-//           <TouchableOpacity
-//             style={styles.customerCard}
-//             onPress={() => handleCustomerClick(item)}
-//           >
-//             <Text style={styles.customerName}>{item.name}</Text>
-//             <Text style={styles.customerEmail}>Email: {item.email}</Text>
-//             <Text style={styles.detailPrompt}>Tap for more details</Text>
-//           </TouchableOpacity>
-//         )}
-//       />
-
-//       {selectedCustomer && (
-//         <Modal
-//           transparent={true}
-//           visible={!!selectedCustomer}
-//           animationType="slide"
-//           onRequestClose={handleCloseDetail}
-//         >
-//           <View style={styles.modalOverlay}>
-//             <View style={styles.modalContent}>
-//               <Text style={styles.modalTitle}>{selectedCustomer.name}</Text>
-//               <Text style={styles.modalText}>Email: {selectedCustomer.email}</Text>
-//               <Text style={styles.modalText}>Phone: {selectedCustomer.phoneNumber}</Text>
-//               <Text style={styles.modalText}>Location: {selectedCustomer.location}</Text>
-//               <Text style={styles.modalText}>
-//                 Description: {selectedCustomer.description || "N/A"}
-//               </Text>
-//               <Text
-//                 style={[
-//                   styles.modalText,
-//                   selectedCustomer.paidStatus ? styles.textPaid : styles.textUnpaid,
-//                 ]}
-//               >
-//                 Paid Status: {selectedCustomer.paidStatus ? "Paid" : "Unpaid"}
-//               </Text>
-//               <Text
-//                 style={[
-//                   styles.modalText,
-//                   selectedCustomer.visitStatus ? styles.textVisited : styles.textNotVisited,
-//                 ]}
-//               >
-//                 Visit Status: {selectedCustomer.visitStatus ? "Visited" : "Not Visited"}
-//               </Text>
-//               <Text style={styles.modalText}>
-//                 Created By: {selectedCustomer.createdBy.name} (Email:{" "}
-//                 {selectedCustomer.createdBy.email})
-//               </Text>
-//               <Text style={styles.modalText}>
-//                 Created At: {new Date(selectedCustomer.createdAt).toLocaleString()}
-//               </Text>
-//               <TouchableOpacity
-//                 style={styles.closeButton}
-//                 onPress={handleCloseDetail}
-//               >
-//                 <Text style={styles.closeButtonText}>Close</Text>
-//               </TouchableOpacity>
-//             </View>
-//           </View>
-//         </Modal>
-//       )}
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: "#f8f8f8",
-//     padding: 16,
-//     marginBottom:50,
-//   },
-//   title: {
-//     fontSize: 24,
-//     fontWeight: "bold",
-//     marginBottom: 8,
-//   },
-//   subtitle: {
-//     fontSize: 16,
-//     marginBottom: 16,
-//   },
-//   dropdownContainer: {
-//     marginBottom: 16,
-//   },
-//   label: {
-//     fontSize: 16,
-//     marginBottom: 8,
-//   },
-//   filterButton: {
-//     padding: 10,
-//     borderRadius: 8,
-//     marginHorizontal: 4,
-//     backgroundColor: "#ddd",
-//   },
-//   filterButtonActive: {
-//     backgroundColor: "#007bff",
-//   },
-//   filterButtonText: {
-//     color: "#fff",
-//   },
-//   customerCard: {
-//     backgroundColor: "#fff",
-//     padding: 16,
-//     marginBottom: 12,
-//     borderRadius: 8,
-//     elevation: 2,
-//   },
-//   customerName: {
-//     fontSize: 18,
-//     fontWeight: "bold",
-//   },
-//   customerEmail: {
-//     fontSize: 14,
-//     marginVertical: 4,
-//   },
-//   detailPrompt: {
-//     fontSize: 12,
-//     color: "#555",
-//   },
-//   modalOverlay: {
-//     flex: 1,
-//     backgroundColor: "rgba(0, 0, 0, 0.5)",
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   modalContent: {
-//     backgroundColor: "#fff",
-//     padding: 20,
-//     borderRadius: 8,
-//     width: "90%",
-    
-//   },
-//   modalTitle: {
-//     fontSize: 20,
-//     fontWeight: "bold",
-//     marginBottom: 16,
-//   },
-//   modalText: {
-//     fontSize: 14,
-//     marginBottom: 8,
-//   },
-//   textPaid: {
-//     color: "green",
-//   },
-//   textUnpaid: {
-//     color: "red",
-//   },
-//   textVisited: {
-//     color: "green",
-//   },
-//   textNotVisited: {
-//     color: "red",
-//   },
-//   closeButton: {
-//     marginTop: 16,
-//     padding: 10,
-//     backgroundColor: "#ff6347",
-//     borderRadius: 8,
-//     alignItems: "center",
-//   },
-//   closeButtonText: {
-//     color: "#fff",
-//     fontWeight: "bold",
-//   },
-//   center: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   errorText: {
-//     color: "red",
-//     fontSize: 16,
-//   },
-// });
-
-// export default SalesPerformance;
-
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -272,10 +9,10 @@ import {
   ActivityIndicator,
   Switch,
   Alert,
-  ScrollView,
 } from "react-native";
 import axiosInstance from "../hooks/axiosInstance";
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const SalesPerformance = () => {
   const navigation = useNavigation();
@@ -284,7 +21,6 @@ const SalesPerformance = () => {
   const [selectedSalesUser, setSelectedSalesUser] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showFullDescription, setShowFullDescription] = useState(false);
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -304,7 +40,6 @@ const SalesPerformance = () => {
 
   const handleCustomerClick = (customer) => {
     setSelectedCustomer(customer);
-    setShowFullDescription(false); // Reset description state
   };
 
   const handleCloseDetail = () => {
@@ -316,6 +51,28 @@ const SalesPerformance = () => {
       navigation.navigate('UpdateCustomer', { customerId: selectedCustomer._id });
       handleCloseDetail();
     }
+  };
+
+  const handleDelete = async (customerId) => {
+    try {
+      await axiosInstance.delete(`/customers/${customerId}`);
+      setCustomers((prevCustomers) => prevCustomers.filter((customer) => customer._id !== customerId));
+      Alert.alert("Success", "Customer deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting customer:", error);
+      Alert.alert("Error", "Failed to delete customer.");
+    }
+  };
+
+  const confirmDelete = (customerId) => {
+    Alert.alert(
+      "Delete Customer",
+      "Are you sure you want to delete this customer?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete", onPress: () => handleDelete(customerId), style: "destructive" },
+      ]
+    );
   };
 
   const handleStatusChange = async (customerId, statusType, value) => {
@@ -347,8 +104,9 @@ const SalesPerformance = () => {
 
   const handleSwitchChange = (customerId, statusType) => {
     const customer = customers.find((cust) => cust._id === customerId);
-    const newValue = !customer[statusType];
-    handleStatusChange(customerId, statusType, newValue);
+    if (!customer[statusType]) {
+      handleStatusChange(customerId, statusType, true);
+    }
   };
 
   const salesUsers = [...new Set(customers.map((customer) => customer.createdBy.name))];
@@ -388,7 +146,9 @@ const SalesPerformance = () => {
             <TouchableOpacity
               style={[
                 styles.filterButton,
-                item === selectedSalesUser ? styles.filterButtonActive : null,
+                (item === selectedSalesUser || (item === "All Users" && selectedSalesUser === "")) 
+                  ? styles.filterButtonActive 
+                  : null,
               ]}
               onPress={() => setSelectedSalesUser(item === "All Users" ? "" : item)}
             >
@@ -402,14 +162,25 @@ const SalesPerformance = () => {
         data={filteredCustomers}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.customerCard}
-            onPress={() => handleCustomerClick(item)}
-          >
-            <Text style={styles.customerName}>{item.name}</Text>
-            <Text style={styles.customerEmail}>Email: {item.email}</Text>
-            <Text style={styles.detailPrompt}>Tap for more details</Text>
-          </TouchableOpacity>
+          <View style={styles.customerCard}>
+            <TouchableOpacity
+              style={styles.cardContent}
+              onPress={() => handleCustomerClick(item)}
+            >
+              <Text style={styles.customerName}>{item.name}</Text>
+              <Text style={styles.customerEmail}>Email: {item.email}</Text>
+              <Text style={styles.detailPrompt}>Tap for more details</Text>
+              <TouchableOpacity 
+                onPress={() => navigation.navigate('Description', { customerId: item._id })}
+                style={styles.descriptionLinkContainer}
+              >
+                <Text style={styles.descriptionLink}>View Description</Text>
+              </TouchableOpacity>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => confirmDelete(item._id)}>
+              <Icon name="delete" size={24} color="red" style={styles.deleteIcon} />
+            </TouchableOpacity>
+          </View>
         )}
       />
 
@@ -423,27 +194,18 @@ const SalesPerformance = () => {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>{selectedCustomer.name}</Text>
-              <Text style={styles.modalText}>Email: {selectedCustomer.email}</Text>
-              <Text style={styles.modalText}>Phone: {selectedCustomer.phoneNumber}</Text>
-              <Text style={styles.modalText}>Location: {selectedCustomer.location}</Text>
-              
-              <Text style={styles.modalText}>
-                <Text style={styles.boldText}>Description:</Text>
-              </Text>
-              <ScrollView style={styles.descriptionContainer}>
-                <Text style={styles.modalText}>
-                  {showFullDescription ? selectedCustomer.description : selectedCustomer.description?.substring(0, 100) + '...'}
-                </Text>
-              </ScrollView>
-              
-              <TouchableOpacity
-                style={styles.showMoreButton}
-                onPress={() => setShowFullDescription((prev) => !prev)}
-              >
-                <Text style={styles.showMoreButtonText}>
-                  {showFullDescription ? "Show Less" : "Show More"}
-                </Text>
-              </TouchableOpacity>
+              <View style={styles.infoRow}>
+                <Icon name="email" size={20} color="#007BFF" />
+                <Text style={[styles.modalText, styles.infoText]}>{selectedCustomer.email}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Icon name="phone" size={20} color="#007BFF" />
+                <Text style={[styles.modalText, styles.infoText]}>{selectedCustomer.phoneNumber}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Icon name="place" size={20} color="#007BFF" />
+                <Text style={[styles.modalText, styles.infoText]}>{selectedCustomer.location}</Text>
+              </View>
 
               <View style={styles.statusRow}>
                 <Text style={styles.statusLabel}>Paid Status:</Text>
@@ -463,13 +225,14 @@ const SalesPerformance = () => {
                   }
                 />
               </View>
-              <Text style={styles.modalText}>
-                Created By: {selectedCustomer.createdBy.name} (Email:{" "}
-                {selectedCustomer.createdBy.email})
-              </Text>
-              <Text style={styles.modalText}>
-                Created At: {new Date(selectedCustomer.createdAt).toLocaleString()}
-              </Text>
+              <View style={styles.infoRow}>
+                <Icon name="person" size={20} color="#007BFF" />
+                <Text style={[styles.modalText, styles.infoText]}>{selectedCustomer.createdBy.name} (Email: {selectedCustomer.createdBy.email})</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Icon name="access-time" size={20} color="#007BFF" />
+                <Text style={[styles.modalText, styles.infoText]}>{new Date(selectedCustomer.createdAt).toLocaleString()}</Text>
+              </View>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity
                   style={styles.editButton}
@@ -492,21 +255,28 @@ const SalesPerformance = () => {
   );
 };
 
+
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#f8fafc",
     padding: 16,
-    marginBottom: 30,
+    marginBottom: 50,
   },
   title: {
-    fontSize: 24,
+    color: "#0891b2",
+    fontSize: 26,
     fontWeight: "bold",
     marginBottom: 8,
+    letterSpacing: 0.5,
   },
   subtitle: {
+    color: "#0e7490",
     fontSize: 16,
-    marginBottom: 16,
+    fontWeight: "600",
+    marginBottom: 20,
   },
   dropdownContainer: {
     marginBottom: 16,
@@ -522,29 +292,47 @@ const styles = StyleSheet.create({
     backgroundColor: "#ddd",
   },
   filterButtonActive: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#0891b2",
   },
   filterButtonText: {
     color: "#fff",
   },
   customerCard: {
-    backgroundColor: "#fff",
-    padding: 16,
+    backgroundColor: "#f0f9ff",
+    padding: 18,
     marginBottom: 12,
-    borderRadius: 8,
-    elevation: 2,
+    borderRadius: 12,
+    elevation: 3,
+    shadowColor: "#0891b2",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderLeftWidth: 4,
+    borderLeftColor: "#0891b2",
   },
   customerName: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "700",
+    color: "#0c4a6e",
+    marginBottom: 4,
   },
   customerEmail: {
     fontSize: 14,
-    marginVertical: 4,
+    color: "#475569",
+    marginBottom: 4,
   },
   detailPrompt: {
     fontSize: 12,
-    color: "#555",
+    color: "#64748b",
+    fontStyle: "italic",
+  },
+  descriptionLink: {
+    color: "#0891b2",
+    fontWeight: "500",
+    textDecorationLine: "underline",
   },
   modalOverlay: {
     flex: 1,
@@ -553,46 +341,59 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContent: {
-    backgroundColor: "#fff",
+    backgroundColor: "#f8fafc",
+    borderRadius: 16,
     padding: 20,
     borderRadius: 8,
     width: "90%",
+    maxHeight: "80%",
+    borderColor: "#0891b2",
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 16,
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#0c4a6e",
+    marginBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#cbd5e1",
+    paddingBottom: 12,
+    width: '100%', // Add this
+    textAlign: 'center', // Add this
   },
   modalText: {
     fontSize: 14,
     marginBottom: 8,
   },
-  descriptionContainer: {
-    maxHeight: 100, // Limit height for scrolling
-  },
-  showMoreButton: {
-    padding: 10,
-    backgroundColor: "#007bff",
-    borderRadius: 8,
+  infoRow: {
+    flexDirection: "row",
     alignItems: "center",
-    marginVertical: 10,
-  },
-  showMoreButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
+    marginBottom: 12,
+    backgroundColor: "#fff",
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    width: '100%', // Add this
   },
   statusRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
+    justifyContent: "space-between",
+    marginBottom: 12,
+    padding: 12,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    width: '100%', // Add this
   },
   statusLabel: {
     fontWeight: "bold",
     marginRight: 10,
   },
   editButton: {
-    padding: 12, // Increased padding
-    backgroundColor: "#007bff",
+    padding: 12,
+    backgroundColor: "#0891b2",
     borderRadius: 8,
     alignItems: "center",
     marginRight: 10,
@@ -603,7 +404,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   closeButton: {
-    padding: 12, // Increased padding
+    padding: 12,
     backgroundColor: "#ff6347",
     borderRadius: 8,
     alignItems: "center",
@@ -627,8 +428,16 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 16,
   },
-  boldText: {
-    fontWeight: "bold",
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  infoText: {
+    marginLeft: 8,
+  },
+  deleteIcon: {
+    marginLeft: 10,
   },
 });
 

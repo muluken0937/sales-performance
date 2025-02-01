@@ -11,21 +11,21 @@ import UpdateProfile from "../screens/UpdateProfile";
 import NotificationsScreen from "../screens/Notifications";
 import CustomerList from "../screens/CustomerList";
 import UpdateCustomer from "../screens/updateCustomer";
+import Description from "../components/Description"; // Import the Description component
 
 const Stack = createStackNavigator();
 
 const _layout = () => {
   const [showWelcome, setShowWelcome] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userRole, setUserRole] = useState(null); 
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
     const fetchUserRole = async () => {
-      const role = await AsyncStorage.getItem("role"); 
-      setUserRole(role || "Guest"); 
-
+      const role = await AsyncStorage.getItem("role");
+      setUserRole(role || "Guest");
     };
-  
+
     fetchUserRole();
   }, []);
 
@@ -40,9 +40,9 @@ const _layout = () => {
   };
 
   const handleLogout = async () => {
-    await AsyncStorage.clear(); 
+    await AsyncStorage.clear();
     setIsLoggedIn(false);
-    setUserRole(null); 
+    setUserRole(null);
   };
 
   if (showWelcome) {
@@ -65,17 +65,39 @@ const _layout = () => {
                 title: "Dashboard",
               }}
             />
-            <Tabs.Screen name="explore" options={{ title: "Customers" }} />
-            <Tabs.Screen name="profile" options={{ title: "Profile" }} />
+            <Tabs.Screen
+              name="explore"
+              options={{
+                header: () => <Navbar onLogout={handleLogout} />,
+                title: "Customers",
+              }}
+            />
+            <Tabs.Screen
+              name="create"
+              options={{
+                header: () => <Navbar onLogout={handleLogout} />,
+                title: "Add-User",
+              }}
+            />
             <Tabs.Screen
               name="CreateCustomer"
-              options={{ title: "Create" }}
+              options={{
+                header: () => <Navbar onLogout={handleLogout} />,
+                title: "Create",
+              }}
             />
-            <Tabs.Screen name="create" options={{ title: "Add-User" }} />
+            <Tabs.Screen
+              name="profile"
+              options={{
+                header: () => <Navbar onLogout={handleLogout} />,
+                title: "Profile",
+              }}
+            />
           </Tabs>
-          
         )}
       </Stack.Screen>
+
+      {/* Stack Screens */}
       <Stack.Screen
         name="UpdateProfile"
         component={UpdateProfile}
@@ -84,7 +106,7 @@ const _layout = () => {
       <Stack.Screen
         name="UpdateCustomer"
         component={UpdateCustomer}
-        options={{ title: "Edit" }}
+        options={{ title: "Edit Customer" }}
       />
       <Stack.Screen
         name="Notifications"
@@ -95,6 +117,11 @@ const _layout = () => {
         name="CustomerList"
         component={CustomerList}
         options={{ title: "Customer List" }}
+      />
+      <Stack.Screen
+        name="Description"
+        component={Description}
+        options={{ title: "Customer Description" }}
       />
     </Stack.Navigator>
   );

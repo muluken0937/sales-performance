@@ -93,7 +93,7 @@ export default function Navbar({ onLogout }) {
           </TouchableOpacity>
         )}
         <TouchableOpacity onPress={onLogout} style={styles.logoutIcon}>
-          <MaterialCommunityIcons name="logout" size={25} color="#CC0000" />
+          <MaterialCommunityIcons name="logout" size={25} color="#0891b2" />
         </TouchableOpacity>
       </View>
     </View>

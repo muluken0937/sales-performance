@@ -1,37 +1,42 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import React from 'react';
-import { AntDesign, Feather, Ionicons } from '@expo/vector-icons';
+import { View, StyleSheet, Keyboard } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import TabBarButton from './TabBarButton';
 
 const TabBar = ({ state, descriptors, navigation, userRole }) => {
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const primaryColor = '#0891b2';
   const greyColor = '#737373';
 
-  
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => setIsKeyboardVisible(true)
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => setIsKeyboardVisible(false)
+    );
 
-  const filteredRoutes = state.routes.filter((route) => {
-    if (route.name === "create" && userRole === "SalesUser") {
-      return false; 
-    }
-    return true; 
-  });
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
-  
+  if (isKeyboardVisible) return null;
+
+  const filteredRoutes = state.routes.filter((route) => 
+    !(route.name === "create" && userRole === "SalesUser")
+  );
 
   return (
     <View style={styles.tabbar}>
       {filteredRoutes.map((route, index) => {
         const { options } = descriptors[route.key];
-        const label =
-          options.tabBarLabel !== undefined
-            ? options.tabBarLabel
-            : options.title !== undefined
-              ? options.title
-              : route.name;
+        const label = options.tabBarLabel || options.title || route.name;
+        const isFocused = state.index === index;
 
         if (['_sitemap', '+not-found'].includes(route.name)) return null;
-
-        const isFocused = state.index === index;
 
         const onPress = () => {
           const event = navigation.emit({
@@ -41,31 +46,20 @@ const TabBar = ({ state, descriptors, navigation, userRole }) => {
           });
 
           if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name, route.params);
+            navigation.navigate(route.name);
           }
         };
 
-        const onLongPress = () => {
-          navigation.emit({
-            type: 'tabLongPress',
-            target: route.key,
-          });
-        };
-        return(
+        return (
           <TabBarButton 
             key={route.name}
-            style={styles.tabbarItem}
             onPress={onPress}
-            onLongPress={onLongPress}
             routeName={route.name}
             isFocused={isFocused}
-            color={isFocused? primaryColor: greyColor}
+            color={isFocused ? primaryColor : greyColor}
             label={label}
-
           />
-        )
-
-      
+        );
       })}
     </View>
   );
@@ -75,22 +69,21 @@ const styles = StyleSheet.create({
   tabbar: {
     position: 'absolute',
     bottom: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     alignItems: 'center',
     backgroundColor: 'white',
-    // marginHorizontal: 0,
-    paddingVertical: 8,
-    padding: 3,
-
-    // borderRadius: 20,
-    shadowColor: 'black',
-    shadowOffset: { width: 0, height: 10 },
-    shadowRadius: 10,
-    shadowOpacity: 0.3,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 5,
   },
-  
 });
 
 export default TabBar;

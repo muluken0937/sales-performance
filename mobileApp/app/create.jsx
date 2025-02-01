@@ -3,6 +3,7 @@ import axiosInstance from "../hooks/axiosInstance";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Import the icon library
 
 export default function RegisterUser() {
   const [userRole, setUserRole] = useState('');
@@ -13,6 +14,7 @@ export default function RegisterUser() {
   const [image, setImage] = useState(null);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // State for showing/hiding password
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -107,14 +109,19 @@ export default function RegisterUser() {
             keyboardType="email-address"
             placeholderTextColor="#888"
           />
-          <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Password"
-            secureTextEntry
-            placeholderTextColor="#888"
-          />
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Password"
+              secureTextEntry={!showPassword} 
+              placeholderTextColor="#888"
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Icon name={showPassword ? "eye" : "eye-slash"} size={20} color="#aaaaaa" />
+            </TouchableOpacity>
+          </View>
           <Text style={styles.label}>Role</Text>
           <View style={styles.rolePicker}>
             {getAvailableRoles(userRole).map((role) => (
@@ -153,9 +160,10 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
     backgroundColor: 'white',
-    bottom:30,
+    bottom: 30,
   },
   title: {
+    color:"#0891b2",
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -167,6 +175,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 12,
+    paddingLeft: 10,
+    fontSize: 16,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 12,
+    paddingEnd:8
+  },
+  passwordInput: {
+    flex: 1,
+    height: 45,
     paddingLeft: 10,
     fontSize: 16,
   },
@@ -191,7 +214,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   uploadButton: {
-    backgroundColor: '#007BFF',
+    backgroundColor: '#0891b2',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',

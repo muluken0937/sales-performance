@@ -10,6 +10,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import axiosInstance from "../hooks/axiosInstance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Icon from 'react-native-vector-icons/MaterialIcons'; // Import the icon library
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -91,13 +92,10 @@ function Profile() {
         <TouchableOpacity style={styles.button} onPress={handleUpdateProfile}>
           <Text style={styles.buttonText}>Update Profile</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, styles.cancelButton]}
-          onPress={handleCancel}
-        >
-          <Text style={styles.buttonText}>Cancel</Text>
-        </TouchableOpacity>
       </View>
+      <TouchableOpacity style={styles.cancelIcon} onPress={handleCancel}>
+        <Icon name="close" size={30} color="#000" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -145,13 +143,16 @@ const styles = StyleSheet.create({
   button: {
     width: "80%",
     padding: 12,
-    backgroundColor: "#1E90FF",
+    backgroundColor: "#0891b2",
     borderRadius: 8,
     marginTop: 12,
     alignItems: "center",
   },
-  cancelButton: {
-    backgroundColor: "#FF6347",
+  cancelIcon: {
+    position: "absolute",
+    top: 40,
+    right: 40,
+    zIndex: 1,
   },
   buttonText: {
     color: "#fff",
