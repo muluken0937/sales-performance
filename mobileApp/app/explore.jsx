@@ -11,7 +11,7 @@ import {
   Alert,
 } from "react-native";
 import axiosInstance from "../hooks/axiosInstance";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const SalesPerformance = () => {
@@ -22,19 +22,29 @@ const SalesPerformance = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const response = await axiosInstance.get("/customers");
-        setCustomers(response.data.data);
-      } catch (err) {
-        setError("Error fetching customers. Please try again.");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchCustomers = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get("/customers");
+      setCustomers(response.data.data);
+      setError(null);
+    } catch (err) {
+      setError("Error fetching customers. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Refresh customers when the screen gains focus
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchCustomers();
+    }, [])
+  );
+
+  // You can still keep an initial load if needed.
+  useEffect(() => {
     fetchCustomers();
   }, []);
 
@@ -137,7 +147,7 @@ const SalesPerformance = () => {
       <Text style={styles.subtitle}>{filteredCustomers.length} Customers</Text>
 
       <View style={styles.dropdownContainer}>
-        <Text style={styles.label}>Select Sales User:</Text>
+        <Text style={styles.label}>Select User:</Text>
         <FlatList
           horizontal
           data={["All Users", ...salesUsers]}
@@ -227,11 +237,15 @@ const SalesPerformance = () => {
               </View>
               <View style={styles.infoRow}>
                 <Icon name="person" size={20} color="#007BFF" />
-                <Text style={[styles.modalText, styles.infoText]}>{selectedCustomer.createdBy.name} (Email: {selectedCustomer.createdBy.email})</Text>
+                <Text style={[styles.modalText, styles.infoText]}>
+                  {selectedCustomer.createdBy.name} (Email: {selectedCustomer.createdBy.email})
+                </Text>
               </View>
               <View style={styles.infoRow}>
                 <Icon name="access-time" size={20} color="#007BFF" />
-                <Text style={[styles.modalText, styles.infoText]}>{new Date(selectedCustomer.createdAt).toLocaleString()}</Text>
+                <Text style={[styles.modalText, styles.infoText]}>
+                  {new Date(selectedCustomer.createdAt).toLocaleString()}
+                </Text>
               </View>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity
@@ -254,6 +268,7 @@ const SalesPerformance = () => {
     </View>
   );
 };
+
 
 
 
@@ -282,8 +297,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
-    fontSize: 16,
+    fontSize: 19,
     marginBottom: 8,
+    color: "#a9740"
   },
   filterButton: {
     padding: 10,
@@ -333,6 +349,10 @@ const styles = StyleSheet.create({
     color: "#0891b2",
     fontWeight: "500",
     textDecorationLine: "underline",
+    fontSize: 16,
+    paddingLeft :60,
+    paddingTop: 5,
+    
   },
   modalOverlay: {
     flex: 1,

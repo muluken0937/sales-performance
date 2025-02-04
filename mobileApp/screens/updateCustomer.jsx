@@ -123,23 +123,7 @@ const UpdateCustomer = () => {
               onChangeText={(v) => handleFieldChange('location', v)}
             />
 
-            {/* New Description Input */}
-            <Text style={styles.sectionTitle}>Add New Description</Text>
-            <TextInput
-              style={[styles.input, styles.descriptionInput]}
-              placeholder="Enter new description"
-              value={newDescription}
-              onChangeText={setNewDescription}
-              multiline
-            />
-
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={handleAddDescription}
-            >
-              <Text style={styles.buttonText}>Add Description</Text>
-            </TouchableOpacity>
-
+            {/* Description History */}
             <Text style={styles.sectionTitle}>Description History</Text>
           </>
         }
@@ -155,9 +139,28 @@ const UpdateCustomer = () => {
           <Text style={styles.emptyText}>No descriptions yet</Text>
         }
         ListFooterComponent={
-          <TouchableOpacity style={styles.updateButton} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>Save Customer Details</Text>
-          </TouchableOpacity>
+          <>
+            {/* New Description Input */}
+            <Text style={styles.sectionTitle}>Add New Description</Text>
+            <TextInput
+              style={[styles.input, styles.descriptionInput]}
+              placeholder="Enter new description"
+              value={newDescription}
+              onChangeText={setNewDescription}
+              multiline
+            />
+
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={handleAddDescription}
+            >
+              <Text style={styles.buttonText}>Add </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.updateButton} onPress={handleSubmit}>
+              <Text style={styles.buttonText}>Save Customer Details</Text>
+            </TouchableOpacity>
+          </>
         }
         contentContainerStyle={styles.contentContainer}
       />
@@ -168,7 +171,7 @@ const UpdateCustomer = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#eee',
   },
   contentContainer: {
     padding: 16,
@@ -220,14 +223,18 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   addButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#7891b2',
     borderRadius: 5,
     padding: 14,
     alignItems: 'center',
     marginVertical: 8,
+    width:100,
+    marginLeft:220,
+  paddingtop:10,
+
   },
   updateButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#0891b2',
     borderRadius: 5,
     padding: 14,
     alignItems: 'center',

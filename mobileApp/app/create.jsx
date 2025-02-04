@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#eee',
     bottom: 30,
   },
   title: {
@@ -210,11 +210,11 @@ const styles = StyleSheet.create({
   selectedRole: {
     padding: 10,
     fontWeight: 'bold',
-    color: 'blue',
+    color: '#0891b2',
     fontSize: 16,
   },
   uploadButton: {
-    backgroundColor: '#0891b2',
+    backgroundColor: '#6891b2',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   registerButton: {
-    backgroundColor: '#28a745',
+    backgroundColor: '#0891b2' ,
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',

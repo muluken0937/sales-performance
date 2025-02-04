@@ -73,40 +73,32 @@ export default function Dashboard() {
     ]);
   };
 
- // Update the fetchStatusCounts useEffect
-useEffect(() => {
-  const fetchStatusCounts = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axiosInstance.get(`/customers/status-counts?period=${period}`);
-      if (response.data.success) {
-        const filteredData = response.data.data
-          .filter(item => !item.isPendingApproval)
-          .map(item => ({
+  useEffect(() => {
+    const fetchStatusCounts = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axiosInstance.get(
+          `/customers/status-counts?period=${period}`
+        );
+        if (response.data.success) {
+          const filteredData = response.data.data.filter(item => !item.isPendingApproval);
+          setData(filteredData.map((item) => ({
             label: item._id,
-            // Only count if isPendingApproval is false and status is true
-            paidCount: customers.filter(c => 
-              c.paidStatus && 
-              !c.isPendingApproval &&
-              c.createdAt.startsWith(item._id) // Match the period
-            ).length,
-            visitCount: customers.filter(c => 
-              c.visitStatus && 
-              !c.isPendingApproval &&
-              c.createdAt.startsWith(item._id)
-            ).length
-          }));
-        setData(filteredData);
+            visitCount: item.visitCount,
+            paidCount: item.paidCount,
+          })));
+        } else {
+          throw new Error(response.data.message || "Unknown error occurred");
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchStatusCounts();
-}, [period, customers]); // Add customers to dependencies
+    };
+    fetchStatusCounts();
+  }, [period]);
 
   const changePeriod = (newPeriod) => {
     setPeriod(newPeriod);

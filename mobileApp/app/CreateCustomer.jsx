@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -8,7 +8,8 @@ import {
   Alert, 
   ScrollView, 
   KeyboardAvoidingView, 
-  Platform 
+  Platform, 
+  Animated 
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axiosInstance from '../hooks/axiosInstance';
@@ -21,23 +22,41 @@ const CreateCustomerScreen = () => {
     location: '',
     description: '',
   });
-  
+
   const [descriptionHeight, setDescriptionHeight] = useState(40);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessages, setErrorMessages] = useState({});
+  const animationValue = useRef(new Animated.Value(0)).current;
 
   const handleChange = (name, value) => {
     setFormData({
       ...formData,
       [name]: value,
     });
+    setErrorMessages((prev) => ({ ...prev, [name]: '' })); // Clear error message on input change
+  };
+
+  const validateFields = () => {
+    const errors = {};
+    if (!formData.name) errors.name = 'Name is required.';
+    if (!formData.phoneNumber) errors.phoneNumber = 'Phone number is required.';
+    if (!formData.location) errors.location = 'Location is required.';
+    return errors;
   };
 
   const handleSubmit = async () => {
+    const validationErrors = validateFields();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrorMessages(validationErrors);
+      return; // Stop submission if there are validation errors
+    }
+
     try {
       const userId = await AsyncStorage.getItem('userId');
       if (!userId) throw new Error('User ID is required');
 
       const response = await axiosInstance.post('/customers', { 
-        ...formData, 
+        ...formData,  
         createdBy: userId 
       });
 
@@ -49,12 +68,43 @@ const CreateCustomerScreen = () => {
         location: '',
         description: '',
       });
-      Alert.alert('Success', 'Customer created successfully!');
+      
+      setSuccessMessage('Customer created successfully!');
+      setTimeout(() => setSuccessMessage(''), 5000);
+      
     } catch (error) {
       console.error('Error creating customer:', error.response?.data || error.message);
       Alert.alert('Error', 'Failed to create customer. Please try again.');
     }
   };
+
+  useEffect(() => {
+    if (successMessage) {
+      Animated.timing(animationValue, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }).start(() => {
+        setTimeout(() => {
+          Animated.timing(animationValue, {
+            toValue: 0,
+            duration: 1000,
+            useNativeDriver: true,
+          }).start();
+        }, 5000);
+      });
+    }
+  }, [successMessage]);
+
+  const translateX = animationValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [100, 0]
+  });
+
+  const translateY = animationValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 20]
+  });
 
   return (
     <KeyboardAvoidingView
@@ -76,7 +126,10 @@ const CreateCustomerScreen = () => {
                 {field.charAt(0).toUpperCase() + field.slice(1)}:
               </Text>
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  errorMessages[field] && styles.inputError
+                ]}
                 value={formData[field]}
                 onChangeText={(text) => handleChange(field, text)}
                 placeholder={`Enter ${field}`}
@@ -84,8 +137,10 @@ const CreateCustomerScreen = () => {
                   field === 'email' ? 'email-address' :
                   field === 'phoneNumber' ? 'phone-pad' : 'default'
                 }
-                required={['name', 'phoneNumber', 'location'].includes(field)}
               />
+              {errorMessages[field] && (
+                <Text style={styles.errorText}>{errorMessages[field]}</Text>
+              )}
             </View>
           ))}
 
@@ -108,6 +163,19 @@ const CreateCustomerScreen = () => {
               textAlignVertical="top"
             />
           </View>
+
+          {/* Success Message Above Submit Button */}
+          {successMessage ? (
+            <Animated.View style={[
+              styles.successMessage,
+              {
+                transform: [{ translateX }, { translateY }],
+                marginBottom: 20, // Add margin to separate from button
+              }
+            ]}>
+              <Text style={styles.successText}>{successMessage}</Text>
+            </Animated.View>
+          ) : null}
 
           {/* Submit Button */}
           <TouchableOpacity style={styles.button} onPress={handleSubmit}>
@@ -136,6 +204,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#0891b2',
   },
+  successMessage: {
+    backgroundColor: '#d1fae5',
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  successText: {
+    color: '#065f46',
+    fontWeight: 'bold',
+  },
   inputContainer: {
     marginBottom: 20,
   },
@@ -154,10 +232,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     height: 40,
   },
+  inputError: {
+    borderColor: 'red', // Highlighting the border in red for errors
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 5,
+  },
   descriptionInput: {
     paddingVertical: 10,
     height: 'auto',
-    minHeight: 40,
+    minHeight: 50,
+    paddingBottom: 50,
+
+    
   },
   button: {
     backgroundColor: '#0891b2',

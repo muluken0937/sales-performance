@@ -6,13 +6,19 @@ const mongoose = require('mongoose');
 exports.createCustomer = async (req, res) => {
   try {
     const { name, location, phoneNumber, description, paidStatus, visitStatus, email } = req.body;
-    const createdBy = req.user.id; 
+    const createdBy = req.user.id;
+
+    // Create initial descriptions array if description exists
+    const descriptions = description ? [{
+      text: description,
+      createdAt: new Date()
+    }] : [];
 
     const newCustomer = await Customer.create({ 
       name, 
       location, 
-      phoneNumber, 
-      description, 
+      phoneNumber,
+      descriptions, 
       paidStatus, 
       visitStatus, 
       email,
@@ -78,25 +84,32 @@ exports.getCustomerById = async (req, res) => {
 // Controller to update a customer
 exports.updateCustomer = async (req, res) => {
   try {
-    const updatedCustomer = await Customer.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-    if (!updatedCustomer) {
-      return res.status(404).json({
-        success: false,
-        message: 'Customer not found',
-      });
+    const { description, ...otherUpdates } = req.body;
+    const update = { ...otherUpdates };
+
+    // Handle description append
+    if (description) {
+      update.$push = {
+        descriptions: {
+          text: description,
+          createdAt: new Date()
+        }
+      };
     }
-    res.status(200).json({
-      success: true,
-      data: updatedCustomer,
-    });
+
+    const updatedCustomer = await Customer.findByIdAndUpdate(
+      req.params.id,
+      update, // Use the modified update object
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedCustomer) {
+      return res.status(404).json({ success: false, message: 'Customer not found' });
+    }
+
+    res.status(200).json({ success: true, data: updatedCustomer });
   } catch (err) {
-    res.status(400).json({
-      success: false,
-      error: err.message,
-    });
+    res.status(400).json({ success: false, error: err.message });
   }
 };
 

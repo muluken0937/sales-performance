@@ -58,41 +58,41 @@ const Description = () => {
   }, [customerId]);
 
   // Group descriptions by time
-  const groupDescriptionsByTime = (descriptions) => {
-    const now = new Date();
-    const groups = {
-      today: [],
-      yesterday: [],
-      lastWeek: [],
-      older: [],
-    };
-
-    descriptions.forEach((desc) => {
-      const descDate = new Date(desc.createdAt);
-      const diffTime = Math.abs(now - descDate);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      if (diffDays === 0) {
-        groups.today.push(desc);
-      } else if (diffDays === 1) {
-        groups.yesterday.push(desc);
-      } else if (diffDays <= 7) {
-        groups.lastWeek.push(desc);
-      } else {
-        groups.older.push(desc);
-      }
-    });
-
-    // Remove empty groups
-    Object.keys(groups).forEach((key) => {
-      if (groups[key].length === 0) {
-        delete groups[key];
-      }
-    });
-
-    return groups;
+const groupDescriptionsByTime = (descriptions) => {
+  const now = new Date();
+  const groups = {
+    today: [],
+    yesterday: [],
+    lastWeek: [],
+    older: [],
   };
 
+  descriptions.forEach((desc) => {
+    const descDate = new Date(desc.createdAt);
+    // Normalize both dates to midnight for comparison
+    const normalizedNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const normalizedDescDate = new Date(descDate.getFullYear(), descDate.getMonth(), descDate.getDate());
+
+    if (normalizedDescDate.getTime() === normalizedNow.getTime()) {
+      groups.today.push(desc);
+    } else if (normalizedDescDate.getTime() === normalizedNow.getTime() - 86400000) { // 86400000 ms in a day
+      groups.yesterday.push(desc);
+    } else if (normalizedDescDate >= new Date(normalizedNow.getTime() - 7 * 86400000)) {
+      groups.lastWeek.push(desc);
+    } else {
+      groups.older.push(desc);
+    }
+  });
+
+  // Remove empty groups
+  Object.keys(groups).forEach((key) => {
+    if (groups[key].length === 0) {
+      delete groups[key];
+    }
+  });
+
+  return groups;
+};
   // Toggle expanded state for a card
   const toggleExpand = (groupName, index) => {
     setExpandedCards((prev) => ({
